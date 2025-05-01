@@ -18,7 +18,7 @@ def generate_map(offset_x, offset_y):
 
     new_map = np.ones((size, size), dtype=int)
 
-    new_map = np.where(terrain_array > 0.4, 0, new_mao)
+    new_map = np.where(terrain_array > 0.4, 0, new_map)
 
     new_map[0, :] = 0
     new_map[-1, :] = 0
