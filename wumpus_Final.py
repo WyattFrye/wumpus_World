@@ -32,14 +32,20 @@ def draw_map(canvas, terrain_colors, world_x, world_y):
 def move_player(event):
     global world_x, world_y
 
+    new_x, new_y = world_x, world_y
+
     if event.keysym == "a":
-        world_y -= 1
+        new_y -= 1
     elif event.keysym == "d":
-        world_y += 1
+        new_y += 1
     elif event.keysym == "w":
-        world_x -= 1
+        new_x -= 1
     elif event.keysym == "s":
-        world_x += 1
+        new_x += 1
+
+    terrain_map = generate_map(new_x, new_y)
+    if terrain_map[size//2][size//2] == 1:
+        world_x, world_y = new_x, new_y
 
     draw_map(canvas, terrain_colors, world_x, world_y)
 
