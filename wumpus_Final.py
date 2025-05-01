@@ -22,7 +22,7 @@ def generate_base_map():
     base_map = np.ones((size, size), dtype=int)
 
 
-    base_map = np.where(terrain_array > 0.4, 0, base_map)
+    base_map = np.where(terrain_array > 0.23, 0, base_map)
 
     base_map[0, :] = 0
     base_map[-1, :] = 0
