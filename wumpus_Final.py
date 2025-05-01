@@ -15,7 +15,15 @@ terrain_colors = {0: "black", 1: "white"}
 def generate_map(offset_x, offset_y):
     terrain_map = [[noise([(i + offset_x) / size, (j + offset_y) / size]) for j in range(size)] for i in range(size)]
     terrain_array = np.array(terrain_map)
-    return np.where(terrain_array > 0.2, 1, 0)
+
+    new_map = np.ones((size, size), dtype=int)  # 1 = White (walkable)
+
+    new_map[0, :] = 0  # Top row
+    new_map[-1, :] = 0  # Bottom row
+    new_map[:, 0] = 0  # Left column
+    new_map[:, -1] = 0  # Right column
+
+    return new_map
 
 def draw_map(canvas, terrain_colors, world_x, world_y):
     canvas.delete("all")
