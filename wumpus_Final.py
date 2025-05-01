@@ -10,7 +10,7 @@ player_x, player_y = size // 2, size // 2
 world_x, world_y = 0, 0
 
 
-terrain_colors = {0: "blue", 1: "green", 2: "brown"}
+terrain_colors = {0: "black", 1: "white"}
 
 def generate_map(offset_x, offset_y):
     terrain_map = [[noise([(i + offset_x) / size, (j + offset_y) / size]) for j in range(size)] for i in range(size)]
