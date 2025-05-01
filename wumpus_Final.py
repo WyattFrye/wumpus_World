@@ -15,7 +15,7 @@ terrain_colors = {0: "blue", 1: "green", 2: "brown"}
 def generate_map(offset_x, offset_y):
     terrain_map = [[noise([(i + offset_x) / size, (j + offset_y) / size]) for j in range(size)] for i in range(size)]
     terrain_array = np.array(terrain_map)
-    return np.where(terrain_array > 0.3, 2, np.where(terrain_array > 0.1, 1, 0))  # Mountain, Grass, Water
+    return np.where(terrain_array > 0.2, 1, 0)
 
 def draw_map(canvas, terrain_colors, world_x, world_y):
     canvas.delete("all")
