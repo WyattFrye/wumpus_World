@@ -6,23 +6,18 @@ from perlin_noise import PerlinNoise
 noise = PerlinNoise(octaves=6, seed=random.randint(0, 100000))
 size = 20
 player_x, player_y = size // 2, size // 2
-world_x, world_y = 0, 0
 
 terrain_colors = {0: "black", 1: "white"}
 
 base_map = None
 
 def generate_base_map():
-
     global base_map
 
     terrain_map = [[noise([i / size, j / size]) for j in range(size)] for i in range(size)]
     terrain_array = np.array(terrain_map)
 
-    base_map = np.ones((size, size), dtype=int)
-
-
-    base_map = np.where(terrain_array > 0.23, 0, base_map)
+    base_map = np.where(terrain_array > 0.2, 0, np.ones((size, size), dtype=int))
 
     base_map[0, :] = 0
     base_map[-1, :] = 0
@@ -54,11 +49,12 @@ def move_player(event):
     elif event.keysym == "d":
         new_x += 1
 
-    if base_map[new_x][new_y] == 1:
+    if 0 <= new_x < size and 0 <= new_y < size and base_map[new_y][new_x] == 1:
+
         player_x, player_y = new_x, new_y
 
     draw_map(canvas, terrain_colors, player_x, player_y)
-
+    root.update()
 
 root = tk.Tk()
 root.title("Wumpus World")
