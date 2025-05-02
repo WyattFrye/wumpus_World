@@ -7,6 +7,7 @@ noise = PerlinNoise(octaves=6, seed=random.randint(0, 100000))
 size = 20
 player_x, player_y = size // 2, size // 2
 wumpus_x, wumpus_y = None, None
+projectiles = []
 
 terrain_colors = {0: "black", 1: "white"}
 base_map = None
@@ -44,6 +45,9 @@ def draw_map(canvas, terrain_colors, player_x, player_y):
     canvas.create_oval(player_screen_x, player_screen_y,
                        player_screen_x + 20, player_screen_y + 20, fill="red")
 
+    for px, py in projectiles:
+        canvas.create_oval(px * 20 + 5, py * 20 + 5, px * 20 + 15, py * 20 + 15, fill="yellow")
+
 def move_player(event):
     global player_x, player_y
 
@@ -58,17 +62,43 @@ def move_player(event):
     elif event.keysym == "d":
         new_x += 1
 
-    # Check walkability
     if 0 <= new_x < size and 0 <= new_y < size and base_map[new_y][new_x] == 1:
         player_x, player_y = new_x, new_y
 
     draw_map(canvas, terrain_colors, player_x, player_y)
     root.update()
 
-    # Wumpus encounter check
     if player_x == wumpus_x and player_y == wumpus_y:
         canvas.create_text(size * 10, size * 10, text="You were eaten by the Wumpus!", fill="red", font=("Arial", 16))
         root.unbind("<KeyPress>")
+
+def shoot(event):
+    if event.keysym == "Up":
+        projectiles.append((player_x, player_y - 1))
+    elif event.keysym == "Down":
+        projectiles.append((player_x, player_y + 1))
+    elif event.keysym == "Left":
+        projectiles.append((player_x - 1, player_y))
+    elif event.keysym == "Right":
+        projectiles.append((player_x + 1, player_y))
+
+    update_projectiles()
+
+def update_projectiles():
+    global projectiles, wumpus_x, wumpus_y
+    new_projectiles = []
+
+    for px, py in projectiles:
+        if 0 <= px < size and 0 <= py < size and base_map[py][px] == 1:
+            if px == wumpus_x and py == wumpus_y:
+                canvas.create_text(size * 10, size * 10, text="You killed the Wumpus!", fill="green", font=("Arial", 16))
+                root.unbind("<KeyPress>")
+                return
+            new_projectiles.append((px, py))
+
+    projectiles = new_projectiles
+    draw_map(canvas, terrain_colors, player_x, player_y)
+    root.after(100, update_projectiles)
 
 root = tk.Tk()
 root.title("Wumpus World")
@@ -80,4 +110,9 @@ place_wumpus()
 draw_map(canvas, terrain_colors, player_x, player_y)
 
 root.bind("<KeyPress>", move_player)
+root.bind("<KeyPress-Up>", shoot)
+root.bind("<KeyPress-Down>", shoot)
+root.bind("<KeyPress-Left>", shoot)
+root.bind("<KeyPress-Right>", shoot)
+
 root.mainloop()
