@@ -24,6 +24,14 @@ def generate_base_map():
     base_map[:, 0] = 0
     base_map[:, -1] = 0
 
+    pits = []
+    num_pits = 5
+    possible_positions = [(i, j) for i in range(size) for j in range(size)
+                          if base_map[i][j] == 1 and (j != player_x or i != player_y)]
+    for _ in range(num_pits):
+        y, x = random.choice(possible_positions)
+        pits.append((x, y))
+
 def place_wumpus():
     global wumpus_x, wumpus_y
     walkable_positions = [(i, j) for i in range(size) for j in range(size)
