@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="af448b11-34fb-41f2-90aa-1d0f3d61edc0" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_wumpus.py" beforeDir="false" afterPath="$PROJECT_DIR$/test_wumpus.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/wumpus_Final.py" beforeDir="false" afterPath="$PROJECT_DIR$/wumpus_Final.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -67,7 +65,7 @@
       <workItem from="1746044050871" duration="4454000" />
       <workItem from="1746112761635" duration="4333000" />
       <workItem from="1746196737004" duration="1624000" />
-      <workItem from="1746729556947" duration="698000" />
+      <workItem from="1746729556947" duration="2078000" />
     </task>
     <servers />
   </component>
@@ -76,6 +74,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/pythonProject$.coverage" NAME=" Coverage Results" MODIFIED="1746197429660" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/pythonProject$wumpus_Final.coverage" NAME="wumpus_Final Coverage Results" MODIFIED="1746730014185" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/pythonProject$wumpus_Final.coverage" NAME="wumpus_Final Coverage Results" MODIFIED="1746731628469" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -12,8 +12,11 @@ projectiles = []
 terrain_colors = {0: "black", 1: "white"}
 base_map = None
 
+pits = []
+
 def generate_base_map():
     global base_map
+    global pits
 
     terrain_map = [[noise([i / size, j / size]) for j in range(size)] for i in range(size)]
     terrain_array = np.array(terrain_map)
@@ -25,7 +28,7 @@ def generate_base_map():
     base_map[:, -1] = 0
 
     pits = []
-    num_pits = 5
+    num_pits = 20
     possible_positions = [(i, j) for i in range(size) for j in range(size)
                           if base_map[i][j] == 1 and (j != player_x or i != player_y)]
     for _ in range(num_pits):
@@ -46,6 +49,9 @@ def draw_map(canvas, terrain_colors, player_x, player_y):
             color = terrain_colors[base_map[i][j]]
             canvas.create_rectangle(j * 20, i * 20, (j + 1) * 20, (i + 1) * 20, fill=color)
 
+    for pit_x, pit_y in pits:
+        canvas.create_oval(pit_x * 20 + 5, pit_y * 20 + 5,pit_x * 20 + 15, pit_y * 20 + 15, fill="gray")
+
     canvas.create_oval(wumpus_x * 20 + 5, wumpus_y * 20 + 5,
                        wumpus_x * 20 + 15, wumpus_y * 20 + 15, fill="green")
 
@@ -55,6 +61,7 @@ def draw_map(canvas, terrain_colors, player_x, player_y):
 
     for px, py in projectiles:
         canvas.create_oval(px * 20 + 5, py * 20 + 5, px * 20 + 15, py * 20 + 15, fill="yellow")
+
 
 def move_player(event):
     global player_x, player_y
@@ -73,12 +80,19 @@ def move_player(event):
     if 0 <= new_x < size and 0 <= new_y < size and base_map[new_y][new_x] == 1:
         player_x, player_y = new_x, new_y
 
+
+    if (player_x, player_y) in pits:
+         canvas.create_text(size * 10, size * 10, text="You fell into a bottomless pit!", fill="blue", font=("Arial", 16))
+         root.unbind("<KeyPress>")
+         return
+
     draw_map(canvas, terrain_colors, player_x, player_y)
     root.update()
 
     if player_x == wumpus_x and player_y == wumpus_y:
         canvas.create_text(size * 10, size * 10, text="You were eaten by the Wumpus!", fill="red", font=("Arial", 16))
         root.unbind("<KeyPress>")
+
 
 def shoot(event):
     if event.keysym == "Up":
