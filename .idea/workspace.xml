@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="af448b11-34fb-41f2-90aa-1d0f3d61edc0" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/wumpus_Final.py" beforeDir="false" afterPath="$PROJECT_DIR$/wumpus_Final.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -65,7 +64,7 @@
       <workItem from="1746044050871" duration="4454000" />
       <workItem from="1746112761635" duration="4333000" />
       <workItem from="1746196737004" duration="1624000" />
-      <workItem from="1746729556947" duration="10606000" />
+      <workItem from="1746729556947" duration="12002000" />
     </task>
     <servers />
   </component>
