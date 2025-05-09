@@ -5,7 +5,7 @@
    git clone https://github.com/WyattFrye/wumpus_World.git
    cd wumpus_Final
    
-2. docker build -t wumpus_game .
+3. docker build -t wumpus_game .
    docker run --rm wumpus_game
 
    How to Play
