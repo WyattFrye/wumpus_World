@@ -7,16 +7,21 @@ noise = PerlinNoise(octaves=6, seed=random.randint(0, 100000))
 size = 20
 player_x, player_y = size // 2, size // 2
 wumpus_x, wumpus_y = None, None
-projectiles = []
+arrows = []
+arrow_count = 6
 
 terrain_colors = {0: "black", 1: "white"}
 base_map = None
-
 pits = []
+bats = []
+revealed_pits = set()
+game_over = False
+wumpus_revealed = False
+key_sequence = ""
+REVEAL_CODE = "qwerty"
 
 def generate_base_map():
-    global base_map
-    global pits
+    global base_map, pits, bats
 
     terrain_map = [[noise([i / size, j / size]) for j in range(size)] for i in range(size)]
     terrain_array = np.array(terrain_map)
@@ -35,6 +40,14 @@ def generate_base_map():
         y, x = random.choice(possible_positions)
         pits.append((x, y))
 
+    bats = []
+    num_bats = 5
+    possible_positions = [(i, j) for i in range(size) for j in range(size)
+                          if base_map[i][j] == 1 and (j, i) != (player_x, player_y) and (j, i) not in pits]
+    for _ in range(num_bats):
+        y, x = random.choice(possible_positions)
+        bats.append((x, y))
+
 def place_wumpus():
     global wumpus_x, wumpus_y
     walkable_positions = [(i, j) for i in range(size) for j in range(size)
@@ -49,83 +62,166 @@ def draw_map(canvas, terrain_colors, player_x, player_y):
             color = terrain_colors[base_map[i][j]]
             canvas.create_rectangle(j * 20, i * 20, (j + 1) * 20, (i + 1) * 20, fill=color)
 
-    for pit_x, pit_y in pits:
-        canvas.create_oval(pit_x * 20 + 5, pit_y * 20 + 5,pit_x * 20 + 15, pit_y * 20 + 15, fill="gray")
+    canvas.create_oval(player_x * 20, player_y * 20, player_x * 20 + 20, player_y * 20 + 20, fill="red")
 
-    canvas.create_oval(wumpus_x * 20 + 5, wumpus_y * 20 + 5,
-                       wumpus_x * 20 + 15, wumpus_y * 20 + 15, fill="green")
-
-    player_screen_x, player_screen_y = player_x * 20, player_y * 20
-    canvas.create_oval(player_screen_x, player_screen_y,
-                       player_screen_x + 20, player_screen_y + 20, fill="red")
-
-    for px, py in projectiles:
+    for px, py in arrows:
         canvas.create_oval(px * 20 + 5, py * 20 + 5, px * 20 + 15, py * 20 + 15, fill="yellow")
 
+    if wumpus_revealed:
+        canvas.create_oval(wumpus_x * 20 + 5, wumpus_y * 20 + 5,
+                           wumpus_x * 20 + 15, wumpus_y * 20 + 15, fill="green")
 
-def move_player(event):
+    for pit_x, pit_y in revealed_pits:
+        canvas.create_oval(pit_x * 20 + 2, pit_y * 20 + 2, pit_x * 20 + 18, pit_y * 20 + 18,
+                           fill="gray", outline="black", width=1)
+
+    if wumpus_revealed:
+        for bat_x, bat_y in bats:
+            canvas.create_oval(bat_x * 20 + 6, bat_y * 20 + 6,
+                               bat_x * 20 + 14, bat_y * 20 + 14,
+                               fill="purple", outline="black", width=1)
+
+def is_near_pit(x, y):
+    return any((x + dx, y + dy) in pits for dx in [-1, 0, 1] for dy in [-1, 0, 1] if (dx, dy) != (0, 0))
+
+def is_near_wumpus(x, y):
+    return any((x + dx, y + dy) == (wumpus_x, wumpus_y) for dx in [-1, 0, 1] for dy in [-1, 0, 1] if (dx, dy) != (0, 0))
+
+def is_near_bats(x, y):
+    return any((x + dx, y + dy) in bats for dx in [-1, 0, 1] for dy in [-1, 0, 1] if (dx, dy) != (0, 0))
+
+def teleport_player():
     global player_x, player_y
 
-    new_x, new_y = player_x, player_y
+    safe_positions = [(j, i) for i in range(size) for j in range(size)
+                      if base_map[i][j] == 1 and (j, i) != (player_x, player_y)]
+    player_x, player_y = random.choice(safe_positions)
+    draw_map(canvas, terrain_colors, player_x, player_y)
 
-    if event.keysym == "w":
-        new_y -= 1
-    elif event.keysym == "s":
-        new_y += 1
-    elif event.keysym == "a":
-        new_x -= 1
-    elif event.keysym == "d":
-        new_x += 1
+def move_player(event):
+    global player_x, player_y, game_over, key_sequence, wumpus_revealed
+
+    if game_over:
+        return
+
+    if event.char.isalpha():
+        key_sequence += event.char.lower()
+        if len(key_sequence) > len(REVEAL_CODE):
+            key_sequence = key_sequence[-len(REVEAL_CODE):]
+
+        if key_sequence == REVEAL_CODE:
+            wumpus_revealed = True
+            revealed_pits.update(pits)
+            message_label.config(text="Everything has been revealed!")
+            draw_map(canvas, terrain_colors, player_x, player_y)
+            return
+
+    dx = {"w": 0, "s": 0, "a": -1, "d": 1}.get(event.keysym, 0)
+    dy = {"w": -1, "s": 1, "a": 0, "d": 0}.get(event.keysym, 0)
+    new_x, new_y = player_x + dx, player_y + dy
 
     if 0 <= new_x < size and 0 <= new_y < size and base_map[new_y][new_x] == 1:
         player_x, player_y = new_x, new_y
 
-
     if (player_x, player_y) in pits:
-         canvas.create_text(size * 10, size * 10, text="You fell into a bottomless pit!", fill="blue", font=("Arial", 16))
-         root.unbind("<KeyPress>")
-         return
+        revealed_pits.add((player_x, player_y))  # Reveal the pit
+        message_label.config(text="You fell into a pit!")
+        player_x, player_y = size // 2, size // 2  # Teleport to start
+    elif (player_x, player_y) == (wumpus_x, wumpus_y):
+        wumpus_revealed = True
+        message_label.config(text="You were eaten by the Wumpus!\nPress SPACE to tray again.")
+        game_over = True
+    elif (player_x, player_y) in bats:
+        message_label.config(text="A giant bat grabs you!\nIt drops you in a random location.")
+        teleport_player()
+    elif is_near_pit(player_x, player_y) and is_near_wumpus(player_x, player_y):
+        message_label.config(text="You feel a cool breeze... and smell something awful.")
+    elif is_near_pit(player_x, player_y):
+        message_label.config(text="You feel a cool breeze...")
+    elif is_near_wumpus(player_x, player_y):
+        message_label.config(text="You smell something awful.")
+    elif is_near_bats(player_x, player_y):
+        message_label.config(text="You hear a flapping in the distance.")
+    else:
+        message_label.config(text="")
 
     draw_map(canvas, terrain_colors, player_x, player_y)
-    root.update()
-
-    if player_x == wumpus_x and player_y == wumpus_y:
-        canvas.create_text(size * 10, size * 10, text="You were eaten by the Wumpus!", fill="red", font=("Arial", 16))
-        root.unbind("<KeyPress>")
-
 
 def shoot(event):
-    if event.keysym == "Up":
-        projectiles.append((player_x, player_y - 1))
-    elif event.keysym == "Down":
-        projectiles.append((player_x, player_y + 1))
-    elif event.keysym == "Left":
-        projectiles.append((player_x - 1, player_y))
-    elif event.keysym == "Right":
-        projectiles.append((player_x + 1, player_y))
+    global arrow_count
 
-    update_projectiles()
+    if arrow_count <= 0:
+        return
 
-def update_projectiles():
-    global projectiles, wumpus_x, wumpus_y
-    new_projectiles = []
+    direction = {"Up": (0, -1), "Down": (0, 1), "Left": (-1, 0), "Right": (1, 0)}.get(event.keysym)
+    if direction:
+        dx, dy = direction
+        arrows.append((player_x + dx, player_y + dy))
+        arrow_count -= 1
+        update_arrow_count()
+        update_arrows()
 
-    for px, py in projectiles:
+def update_arrow_count():
+    arrow_label.config(text=f"Arrows: {arrow_count}")
+
+def update_arrows():
+    global arrows, wumpus_x, wumpus_y, game_over, wumpus_revealed
+
+    new_arrows = []
+    for px, py in arrows:
         if 0 <= px < size and 0 <= py < size and base_map[py][px] == 1:
-            if px == wumpus_x and py == wumpus_y:
-                canvas.create_text(size * 10, size * 10, text="You killed the Wumpus!", fill="green", font=("Arial", 16))
-                root.unbind("<KeyPress>")
+            if (px, py) == (wumpus_x, wumpus_y):
+                wumpus_revealed = True
+                message_label.config(text="You killed the Wumpus!\nPress SPACE to play again.")
+                game_over = True
+                draw_map(canvas, terrain_colors, player_x, player_y)
                 return
-            new_projectiles.append((px, py))
+            new_arrows.append((px, py))
 
-    projectiles = new_projectiles
+    arrows = new_arrows
     draw_map(canvas, terrain_colors, player_x, player_y)
-    root.after(100, update_projectiles)
+    root.after(100, update_arrows)
+
+def restart_game(event):
+    global player_x, player_y, wumpus_x, wumpus_y, arrows
+    global game_over, revealed_pits, wumpus_revealed, key_sequence, arrow_count
+
+    if not game_over:
+        return
+
+    wumpus_revealed = False
+    revealed_pits.clear()
+    key_sequence = ""
+    arrows = []
+    arrow_count = 6
+    player_x, player_y = size // 2, size // 2
+
+    generate_base_map()
+    place_wumpus()
+
+    game_over = False
+    message_label.config(text="")
+    update_arrow_count()
+    draw_map(canvas, terrain_colors, player_x, player_y)
 
 root = tk.Tk()
 root.title("Wumpus World")
-canvas = tk.Canvas(root, width=size * 20, height=size * 20)
-canvas.pack()
+root.geometry("800x600")
+
+frame = tk.Frame(root)
+frame.pack()
+
+canvas = tk.Canvas(frame, width=size * 20, height=size * 20)
+canvas.grid(row=0, column=0)
+
+info_frame = tk.Frame(root)
+info_frame.pack()
+
+arrow_label = tk.Label(info_frame, text=f"Arrows: {arrow_count}", font=("Arial", 12), fg="blue")
+arrow_label.pack()
+
+message_label = tk.Label(frame, text="", font=("Arial", 12), fg="blue", width=50, anchor="w")
+message_label.grid(row=1, column=0, padx=10)
 
 generate_base_map()
 place_wumpus()
@@ -136,5 +232,6 @@ root.bind("<KeyPress-Up>", shoot)
 root.bind("<KeyPress-Down>", shoot)
 root.bind("<KeyPress-Left>", shoot)
 root.bind("<KeyPress-Right>", shoot)
+root.bind("<KeyPress-space>", restart_game)
 
 root.mainloop()
