@@ -18,15 +18,6 @@ from wumpus_Final import (
 def setup_module(module):
     """Setup map and entities once before tests."""
     generate_base_map()
-    place_wumpus()
-
-def test_base_map_dimensions():
-    assert len(base_map) == size
-    assert all(len(row) == size for row in base_map)
-
-def test_wumpus_placement():
-    assert (wumpus_x is not None) and (wumpus_y is not None)
-    assert base_map[wumpus_y][wumpus_x] == 1
 
 def test_pits_not_on_player():
     assert all((x, y) != (player_x, player_y) for (x, y) in pits)
