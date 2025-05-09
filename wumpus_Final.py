@@ -124,9 +124,9 @@ def move_player(event):
         player_x, player_y = new_x, new_y
 
     if (player_x, player_y) in pits:
-        revealed_pits.add((player_x, player_y))  # Reveal the pit
+        revealed_pits.add((player_x, player_y))
         message_label.config(text="You fell into a pit!")
-        player_x, player_y = size // 2, size // 2  # Teleport to start
+        player_x, player_y = size // 2, size // 2
     elif (player_x, player_y) == (wumpus_x, wumpus_y):
         wumpus_revealed = True
         message_label.config(text="You were eaten by the Wumpus!\nPress SPACE to tray again.")
@@ -204,35 +204,36 @@ def restart_game(event):
     update_arrow_count()
     draw_map(canvas, terrain_colors, player_x, player_y)
 
-root = tk.Tk()
-root.title("Wumpus World")
-root.geometry("800x600")
+# GUI LAUNCH BLOCK (prevents Tkinter from running in CI test)
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.title("Wumpus World")
+    root.geometry("800x600")
 
-frame = tk.Frame(root)
-frame.pack()
+    frame = tk.Frame(root)
+    frame.pack()
 
-canvas = tk.Canvas(frame, width=size * 20, height=size * 20)
-canvas.grid(row=0, column=0)
+    canvas = tk.Canvas(frame, width=size * 20, height=size * 20)
+    canvas.grid(row=0, column=0)
 
-info_frame = tk.Frame(root)
-info_frame.pack()
+    info_frame = tk.Frame(root)
+    info_frame.pack()
 
-arrow_label = tk.Label(info_frame, text=f"Arrows: {arrow_count}", font=("Arial", 12), fg="blue")
-arrow_label.pack()
+    arrow_label = tk.Label(info_frame, text=f"Arrows: {arrow_count}", font=("Arial", 12), fg="blue")
+    arrow_label.pack()
 
-message_label = tk.Label(frame, text="", font=("Arial", 12), fg="blue", width=50, anchor="w")
-message_label.grid(row=1, column=0, padx=10)
+    message_label = tk.Label(frame, text="", font=("Arial", 12), fg="blue", width=50, anchor="w")
+    message_label.grid(row=1, column=0, padx=10)
 
-generate_base_map()
-place_wumpus()
-draw_map(canvas, terrain_colors, player_x, player_y)
+    generate_base_map()
+    place_wumpus()
+    draw_map(canvas, terrain_colors, player_x, player_y)
 
-root.bind("<KeyPress>", move_player)
-root.bind("<KeyPress-Up>", shoot)
-root.bind("<KeyPress-Down>", shoot)
-root.bind("<KeyPress-Left>", shoot)
-root.bind("<KeyPress-Right>", shoot)
-root.bind("<KeyPress-space>", restart_game)
+    root.bind("<KeyPress>", move_player)
+    root.bind("<KeyPress-Up>", shoot)
+    root.bind("<KeyPress-Down>", shoot)
+    root.bind("<KeyPress-Left>", shoot)
+    root.bind("<KeyPress-Right>", shoot)
+    root.bind("<KeyPress-space>", restart_game)
 
-root.mainloop()
-#Boo
+    root.mainloop()
