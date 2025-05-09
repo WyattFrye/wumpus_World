@@ -1,18 +1,13 @@
-import pytest
+
 from wumpus_Final import (
     generate_base_map,
-    place_wumpus,
     is_near_pit,
     is_near_wumpus,
     is_near_bats,
-    base_map,
     pits,
     bats,
-    wumpus_x,
-    wumpus_y,
     player_x,
     player_y,
-    size,
 )
 
 def setup_module(module):

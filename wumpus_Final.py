@@ -20,7 +20,6 @@ wumpus_revealed = False
 key_sequence = ""
 REVEAL_CODE = "qwerty"
 
-
 def generate_base_map():
     global base_map, pits, bats
 
@@ -59,7 +58,6 @@ def generate_base_map():
         y, x = random.choice(possible_positions)
         bats.append((x, y))
 
-
 def place_wumpus():
     global wumpus_x, wumpus_y
 
@@ -70,7 +68,6 @@ def place_wumpus():
         if base_map[i][j] == 1 and (j != player_x or i != player_y)
     ]
     wumpus_y, wumpus_x = random.choice(walkable_positions)
-
 
 def draw_map(canvas, terrain_colors, player_x, player_y):
     canvas.delete("all")
@@ -127,7 +124,6 @@ def draw_map(canvas, terrain_colors, player_x, player_y):
                 width=1,
                 )
 
-
 def is_near_pit(x, y):
     return any(
         (x + dx, y + dy) in pits
@@ -135,7 +131,6 @@ def is_near_pit(x, y):
         for dy in [-1, 0, 1]
         if (dx, dy) != (0, 0)
     )
-
 
 def is_near_wumpus(x, y):
     return any(
@@ -145,7 +140,6 @@ def is_near_wumpus(x, y):
         if (dx, dy) != (0, 0)
     )
 
-
 def is_near_bats(x, y):
     return any(
         (x + dx, y + dy) in bats
@@ -153,7 +147,6 @@ def is_near_bats(x, y):
         for dy in [-1, 0, 1]
         if (dx, dy) != (0, 0)
     )
-
 
 def teleport_player():
     global player_x, player_y
@@ -166,7 +159,6 @@ def teleport_player():
     ]
     player_x, player_y = random.choice(safe_positions)
     draw_map(canvas, terrain_colors, player_x, player_y)
-
 
 def move_player(event):
     global player_x, player_y, game_over, key_sequence, wumpus_revealed
@@ -200,7 +192,7 @@ def move_player(event):
     elif (player_x, player_y) == (wumpus_x, wumpus_y):
         wumpus_revealed = True
         message_label.config(
-            text="You were eaten by the Wumpus!\nPress SPACE to try again."
+            text="You were eaten by the Wumpus!\nPress SPACE to tray again."
         )
         game_over = True
     elif (player_x, player_y) in bats:
@@ -223,7 +215,6 @@ def move_player(event):
 
     draw_map(canvas, terrain_colors, player_x, player_y)
 
-
 def shoot(event):
     global arrow_count
 
@@ -240,10 +231,8 @@ def shoot(event):
         update_arrow_count()
         update_arrows()
 
-
 def update_arrow_count():
     arrow_label.config(text=f"Arrows: {arrow_count}")
-
 
 def update_arrows():
     global arrows, game_over, wumpus_revealed
@@ -264,7 +253,6 @@ def update_arrows():
     arrows = new_arrows
     draw_map(canvas, terrain_colors, player_x, player_y)
     root.after(100, update_arrows)
-
 
 def restart_game(event):
     global player_x, player_y, wumpus_x, wumpus_y, arrows
@@ -287,7 +275,6 @@ def restart_game(event):
     message_label.config(text="")
     update_arrow_count()
     draw_map(canvas, terrain_colors, player_x, player_y)
-
 
 if __name__ == "__main__":
     root = tk.Tk()
