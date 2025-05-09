@@ -44,8 +44,8 @@ jobs:
 
       - name: Run Flake8
         run: |
-          flake8 src/ --max-line-length=88 --statistics --count
+          flake8 . --max-line-length=88 --statistics --count
 
       - name: Run Black (check mode)
         run: |
-          black --check src/
+          black --check .
