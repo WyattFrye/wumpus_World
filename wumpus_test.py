@@ -1,28 +1,44 @@
 import pytest
-import wumpus_Final as wf
+from wumpus_Final import (
+    generate_base_map,
+    place_wumpus,
+    is_near_pit,
+    is_near_wumpus,
+    is_near_bats,
+    base_map,
+    pits,
+    bats,
+    wumpus_x,
+    wumpus_y,
+    player_x,
+    player_y,
+    size,
+)
 
 def setup_module(module):
-    """Setup map and entities before tests."""
-    wf.generate_base_map()
-    wf.place_wumpus()
+    """Setup map and entities once before tests."""
+    generate_base_map()
+    place_wumpus()
 
 def test_base_map_dimensions():
-    assert wf.base_map is not None
-    assert len(wf.base_map) == wf.size
-    assert all(len(row) == wf.size for row in wf.base_map)
+    assert len(base_map) == size
+    assert all(len(row) == size for row in base_map)
 
 def test_wumpus_placement():
-    assert wf.wumpus_x is not None and wf.wumpus_y is not None
-    assert wf.base_map[wf.wumpus_y][wf.wumpus_x] == 1
+    assert (wumpus_x is not None) and (wumpus_y is not None)
+    assert base_map[wumpus_y][wumpus_x] == 1
 
-def test_is_near_pit():
-    assert callable(wf.is_near_pit)
+def test_pits_not_on_player():
+    assert all((x, y) != (player_x, player_y) for (x, y) in pits)
 
-def test_is_near_bats():
-    assert callable(wf.is_near_bats)
+def test_bats_not_on_player():
+    assert all((x, y) != (player_x, player_y) for (x, y) in bats)
 
-def test_valid_base_map_structure():
-    assert all(isinstance(row, list) for row in wf.base_map)
+def test_is_near_pit_returns_bool():
+    assert isinstance(is_near_pit(player_x, player_y), bool)
 
-def test_map_cell_values():
-    assert all(all(isinstance(cell, int) for cell in row) for row in wf.base_map)
+def test_is_near_wumpus_returns_bool():
+    assert isinstance(is_near_wumpus(player_x, player_y), bool)
+
+def test_is_near_bats_returns_bool():
+    assert isinstance(is_near_bats(player_x, player_y), bool)
