@@ -8,4 +8,4 @@ COPY . /app
 
 RUN pip install --no-cache-dir numpy perlin_noise
 
-CMD ["python", "wumpus_Final.py"]
+CMD ["xvfb-run", "-a", "python", "wumpus_Final.py"]
